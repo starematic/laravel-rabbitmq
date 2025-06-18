@@ -1,6 +1,6 @@
 <?php
 
-namespace LaravelRabbitMQ\Services;
+namespace Starematic\RabbitMq\Services;
 
 use Exception;
 use JsonException;
@@ -9,7 +9,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class RabbitMQPublisher
+class MessagePublisher
 {
     protected AMQPStreamConnection $connection;
     protected AbstractChannel|AMQPChannel $channel;

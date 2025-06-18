@@ -1,18 +1,28 @@
 <?php
 
-namespace LaravelRabbitMQ;
+namespace Starematic\RabbitMQ;
 
 use Illuminate\Support\ServiceProvider;
-use LaravelRabbitMQ\Services\RabbitMQPublisher;
+use Starematic\RabbitMQ\Services\MessagePublisher;
+use Starematic\RabbitMQ\Services\MessageConsumer;
 
 class RabbitMQServiceProvider extends ServiceProvider
 {
-    public function register(): void
+    public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/config/rabbitmq.php', 'rabbitmq');
 
-        $this->app->singleton(RabbitMQPublisher::class, function () {
-            return new RabbitMQPublisher(
+        $this->app->singleton(MessagePublisher::class, function () {
+            return new MessagePublisher(
+                config('rabbitmq.host'),
+                config('rabbitmq.port'),
+                config('rabbitmq.user'),
+                config('rabbitmq.password')
+            );
+        });
+
+        $this->app->singleton(MessageConsumer::class, function () {
+            return new MessageConsumer(
                 config('rabbitmq.host'),
                 config('rabbitmq.port'),
                 config('rabbitmq.user'),
@@ -21,7 +31,7 @@ class RabbitMQServiceProvider extends ServiceProvider
         });
     }
 
-    public function boot(): void
+    public function boot()
     {
         $this->publishes([
             __DIR__.'/config/rabbitmq.php' => config_path('rabbitmq.php'),
