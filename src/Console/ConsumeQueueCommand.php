@@ -4,8 +4,10 @@ namespace Starematic\RabbitMQ\Console;
 
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Starematic\RabbitMQ\Services\MessageConsumer;
 use Starematic\RabbitMQ\Contracts\QueueHandler;
+use Throwable;
 
 
 class ConsumeQueueCommand extends Command
@@ -30,7 +32,7 @@ class ConsumeQueueCommand extends Command
 
         if ($queueFilter) {
             $filterList = array_map('trim', explode(',', $queueFilter));
-            $filtered = $filtered->filter(fn($h) => in_array($h->queue(), $filterList));
+            $filtered = $filtered->filter(fn($h) => in_array($h->queue(), $filterList, true));
         }
 
         if ($filtered->isEmpty()) {
@@ -41,7 +43,7 @@ class ConsumeQueueCommand extends Command
         $queues = $filtered->map(fn($handler) => $handler->queue())->unique()->values()->all();
 
         $this->newLine();
-        $this->components->info("RabbitMQ Consumer Ready");
+        $this->components->info("RabbitMQ consumer ready");
         $this->components->twoColumnDetail('Queues', '<fg=cyan>' . implode('</>, <fg=cyan>', $queues) . '</>');
         $this->components->twoColumnDetail('Started at', now()->toDateTimeString());
         $this->newLine();
@@ -49,8 +51,13 @@ class ConsumeQueueCommand extends Command
         foreach ($filtered as $handler) {
             $consumer->consume($handler->queue(), function ($payload) use ($handler) {
                 $this->components->task("[{$handler->queue()}] Message received", function () use ($handler, $payload) {
-                    $handler->handle($payload);
-                    return true;
+                    try {
+                        $handler->handle($payload);
+                        return true;
+                    } catch (Throwable $e) {
+                        Log::error($e);
+                        return false;
+                    }
                 });
             }, false);
         }
