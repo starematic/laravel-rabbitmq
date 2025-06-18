@@ -5,7 +5,6 @@ namespace Starematic\RabbitMQ\Console;
 use Exception;
 use Illuminate\Console\Command;
 use Starematic\RabbitMQ\Services\MessageConsumer;
-use Illuminate\Support\Facades\Log;
 
 class ConsumeQueueCommand extends Command
 {
@@ -20,17 +19,21 @@ class ConsumeQueueCommand extends Command
         $queueArg = $this->option('queue');
 
         if (! $queueArg) {
-            $this->error('You must specify at least one queue using --queue=');
+            $this->components->error('You must specify at least one queue using --queue=');
             return;
         }
 
         $queues = array_map('trim', explode(',', $queueArg));
 
-        foreach ($queues as $queue) {
-            $this->info("Listening to queue: $queue");
+        $this->components->info('🔌 Listening to queues:');
+        $this->components->bulletList($queues);
 
+
+        foreach ($queues as $queue) {
             $consumer->consume($queue, function ($payload) use ($queue) {
-                Log::info("[$queue] Consumed: ", $payload);
+                $this->components->task("[$queue] Message received", function () {
+                    return true;
+                });
             }, false);
         }
 
