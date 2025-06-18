@@ -25,9 +25,11 @@ class ConsumeQueueCommand extends Command
 
         $queues = array_map('trim', explode(',', $queueArg));
 
-        $this->components->info('🔌 Listening to queues:');
-        $this->components->bulletList($queues);
-
+        $this->newLine();
+        $this->components->info("RabbitMQ Consumer Ready");
+        $this->components->twoColumnDetail('Queues', '<fg=cyan>' . implode('</>, <fg=cyan>', $queues) . '</>');
+        $this->components->twoColumnDetail('Started at', now()->toDateTimeString());
+        $this->newLine();
 
         foreach ($queues as $queue) {
             $consumer->consume($queue, function ($payload) use ($queue) {
