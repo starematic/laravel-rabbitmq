@@ -59,7 +59,7 @@ class ConsumeQueueCommand extends Command
                         return true;
                     } catch (Throwable $e) {
                         Log::error($e);
-                        throw $e;
+                        return false;
                     }
                 });
             }, false);
