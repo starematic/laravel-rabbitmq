@@ -4,8 +4,8 @@
   "type": "library",
   "license": "MIT",
   "require": {
-    "php": ">=8.4",
-    "illuminate/support": "^12.19",
+    "php": "^8.4",
+    "illuminate/support": "^11.0",
     "php-amqplib/php-amqplib": "^3.7"
   }
   ,
