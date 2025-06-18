@@ -1,0 +1,27 @@
+{
+  "name": "linkbound/laravel-rabbitmq",
+  "description": "Reusable RabbitMQ integration using php-amqplib for Laravel apps.",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.4",
+    "illuminate/support": "^12.19",
+    "php-amqplib/php-amqplib": "^3.7"
+  }
+  ,
+  "require-dev": {
+    "roave/security-advisories": "dev-latest"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "LaravelRabbitMQ\\RabbitMQServiceProvider"
+      ]
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "LaravelRabbitMQ\\": "src/"
+    }
+  }
+}
