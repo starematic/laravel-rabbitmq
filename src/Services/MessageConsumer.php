@@ -24,7 +24,7 @@ class MessageConsumer
     /**
      * @throws Exception
      */
-    public function consume(string $queue, callable $callback): void
+    public function consume(string $queue, callable $callback, bool $wait = true): void
     {
         $this->channel->queue_declare($queue, false, true, false, false);
 
@@ -33,6 +33,21 @@ class MessageConsumer
             $callback($payload);
         });
 
+        if ($wait) {
+            while ($this->channel->is_consuming()) {
+                $this->channel->wait();
+            }
+
+            $this->channel->close();
+            $this->connection->close();
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function waitLoop(): void
+    {
         while ($this->channel->is_consuming()) {
             $this->channel->wait();
         }

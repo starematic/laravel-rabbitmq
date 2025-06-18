@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class ConsumeQueueCommand extends Command
 {
-    protected $signature = 'rabbitmq:consume {queue}';
+    protected $signature = 'rabbitmq:consume {--queue=}';
     protected $description = 'Consume messages from a RabbitMQ queue';
 
     /**
@@ -17,11 +17,23 @@ class ConsumeQueueCommand extends Command
      */
     public function handle(MessageConsumer $consumer): void
     {
-        $queue = $this->argument('queue');
-        $this->info("Listening to queue: $queue");
+        $queueArg = $this->option('queue');
 
-        $consumer->consume($queue, function ($payload) {
-            Log::info("Consumed: ", $payload);
-        });
+        if (! $queueArg) {
+            $this->error('You must specify at least one queue using --queue=');
+            return;
+        }
+
+        $queues = array_map('trim', explode(',', $queueArg));
+
+        foreach ($queues as $queue) {
+            $this->info("Listening to queue: $queue");
+
+            $consumer->consume($queue, function ($payload) use ($queue) {
+                Log::info("[$queue] Consumed: ", $payload);
+            }, false);
+        }
+
+        $consumer->waitLoop();
     }
 }
