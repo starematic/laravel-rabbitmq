@@ -33,7 +33,7 @@ class ConsumeQueueCommand extends Command
 
         if ($queueFilter) {
             $filterList = array_map('trim', explode(',', $queueFilter));
-            $filtered = $filtered->filter(fn ($h) => in_array($h->queue(), $filterList, true));
+            $filtered = $filtered->filter(fn($h) => in_array($h->queue(), $filterList, true));
         }
 
         if ($filtered->isEmpty()) {
@@ -42,11 +42,11 @@ class ConsumeQueueCommand extends Command
             return;
         }
 
-        $queues = $filtered->map(fn ($handler) => $handler->queue())->unique()->values()->all();
+        $queues = $filtered->map(fn($handler) => $handler->queue())->unique()->values()->all();
 
         $this->newLine();
         $this->components->info('RabbitMQ consumer ready');
-        $this->components->twoColumnDetail('Queues', '<fg=cyan>'.implode('</>, <fg=cyan>', $queues).'</>');
+        $this->components->twoColumnDetail('Queues', '<fg=cyan>' . implode('</>, <fg=cyan>', $queues) . '</>');
         $this->components->twoColumnDetail('Started at', now()->toDateTimeString());
         $this->newLine();
 
@@ -59,8 +59,7 @@ class ConsumeQueueCommand extends Command
                         return true;
                     } catch (Throwable $e) {
                         Log::error($e);
-
-                        return false;
+                        throw $e;
                     }
                 });
             }, false);
