@@ -5,6 +5,8 @@ namespace Starematic\RabbitMQ\Console;
 use Exception;
 use Illuminate\Console\Command;
 use Starematic\RabbitMQ\Services\MessageConsumer;
+use Starematic\RabbitMQ\Contracts\QueueHandler;
+
 
 class ConsumeQueueCommand extends Command
 {
@@ -16,14 +18,27 @@ class ConsumeQueueCommand extends Command
      */
     public function handle(MessageConsumer $consumer): void
     {
-        $queueArg = $this->option('queue');
+        $handlers = app()->tagged(QueueHandler::class);
 
-        if (! $queueArg) {
-            $this->components->error('You must specify at least one queue using --queue=');
+        if (empty($handlers)) {
+            $this->components->error('No queue handlers found. Make sure your handlers are tagged and implement the QueueHandler interface.');
             return;
         }
 
-        $queues = array_map('trim', explode(',', $queueArg));
+        $queueFilter = $this->option('queue');
+        $filtered = collect($handlers);
+
+        if ($queueFilter) {
+            $filterList = array_map('trim', explode(',', $queueFilter));
+            $filtered = $filtered->filter(fn($h) => in_array($h->queue(), $filterList));
+        }
+
+        if ($filtered->isEmpty()) {
+            $this->components->error('No handlers matched the provided --queue option.');
+            return;
+        }
+
+        $queues = $filtered->map(fn($handler) => $handler->queue())->unique()->values()->all();
 
         $this->newLine();
         $this->components->info("RabbitMQ Consumer Ready");
@@ -31,9 +46,10 @@ class ConsumeQueueCommand extends Command
         $this->components->twoColumnDetail('Started at', now()->toDateTimeString());
         $this->newLine();
 
-        foreach ($queues as $queue) {
-            $consumer->consume($queue, function ($payload) use ($queue) {
-                $this->components->task("[$queue] Message received", function () {
+        foreach ($filtered as $handler) {
+            $consumer->consume($handler->queue(), function ($payload) use ($handler) {
+                $this->components->task("[{$handler->queue()}] Message received", function () use ($handler, $payload) {
+                    $handler->handle($payload);
                     return true;
                 });
             }, false);
