@@ -8,7 +8,7 @@ use Starematic\RabbitMQ\Services\MessageConsumer;
 
 class RabbitMQServiceProvider extends ServiceProvider
 {
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/config/rabbitmq.php', 'rabbitmq');
 
@@ -31,10 +31,10 @@ class RabbitMQServiceProvider extends ServiceProvider
         });
     }
 
-    public function boot()
+    public function boot(): void
     {
         $this->publishes([
-            __DIR__.'/config/rabbitmq.php' => config_path('rabbitmq.php'),
+            __DIR__.'/Config/rabbitmq.php' => config_path('rabbitmq.php'),
         ], 'rabbitmq-config');
     }
 }

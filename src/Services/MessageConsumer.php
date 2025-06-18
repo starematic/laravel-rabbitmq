@@ -1,6 +1,6 @@
 <?php
 
-namespace Starematic\RabbitMq\Services;
+namespace Starematic\RabbitMQ\Services;
 
 use Exception;
 use PhpAmqpLib\Channel\AbstractChannel;
