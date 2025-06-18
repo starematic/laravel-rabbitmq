@@ -4,7 +4,6 @@ namespace Starematic\RabbitMQ\Console;
 
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use Starematic\RabbitMQ\Contracts\QueueHandler;
 use Starematic\RabbitMQ\Services\MessageConsumer;
 use Throwable;
@@ -55,10 +54,8 @@ class ConsumeQueueCommand extends Command
                 $this->components->task("[{$handler->queue()}] Message received", function () use ($handler, $payload) {
                     try {
                         $handler->handle($payload);
-
                         return true;
                     } catch (Throwable $e) {
-                        Log::error($e);
                         return false;
                     }
                 });
