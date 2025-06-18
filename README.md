@@ -1,0 +1,2 @@
+# laravel-rabbitmq
+RabbitMQ package
