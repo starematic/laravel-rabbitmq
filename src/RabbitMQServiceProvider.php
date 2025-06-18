@@ -3,6 +3,7 @@
 namespace Starematic\RabbitMQ;
 
 use Illuminate\Support\ServiceProvider;
+use Starematic\RabbitMQ\Console\ConsumeQueueCommand;
 use Starematic\RabbitMQ\Services\MessagePublisher;
 use Starematic\RabbitMQ\Services\MessageConsumer;
 
@@ -33,6 +34,11 @@ class RabbitMQServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ConsumeQueueCommand::class,
+            ]);
+        }
         $this->publishes([
             __DIR__.'/Config/rabbitmq.php' => config_path('rabbitmq.php'),
         ], 'rabbitmq-config');
