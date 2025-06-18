@@ -4,8 +4,8 @@ namespace Starematic\RabbitMQ;
 
 use Illuminate\Support\ServiceProvider;
 use Starematic\RabbitMQ\Console\ConsumeQueueCommand;
-use Starematic\RabbitMQ\Services\MessagePublisher;
 use Starematic\RabbitMQ\Services\MessageConsumer;
+use Starematic\RabbitMQ\Services\MessagePublisher;
 
 class RabbitMQServiceProvider extends ServiceProvider
 {

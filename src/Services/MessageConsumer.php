@@ -10,6 +10,7 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 class MessageConsumer
 {
     protected AMQPStreamConnection $connection;
+
     protected AbstractChannel|AMQPChannel $channel;
 
     /**
@@ -51,7 +52,6 @@ class MessageConsumer
         while ($this->channel->is_consuming()) {
             $this->channel->wait();
         }
-
         $this->channel->close();
         $this->connection->close();
     }

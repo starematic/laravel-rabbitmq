@@ -12,6 +12,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 class MessagePublisher
 {
     protected AMQPStreamConnection $connection;
+    
     protected AbstractChannel|AMQPChannel $channel;
 
     /**

@@ -12,7 +12,8 @@
   }
   ,
   "require-dev": {
-    "roave/security-advisories": "dev-latest"
+    "roave/security-advisories": "dev-latest",
+    "laravel/pint": "^1.22"
   },
   "extra": {
     "laravel": {
@@ -25,5 +26,8 @@
     "psr-4": {
       "Starematic\\RabbitMQ\\": "src/"
     }
+  },
+  "scripts": {
+    "format": "pint"
   }
 }
