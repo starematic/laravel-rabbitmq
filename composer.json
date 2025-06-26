@@ -1,5 +1,5 @@
 {
-  "name": "starematic/laravel-rabbitmq",
+  "name": "laravel-mq/rabbit",
   "description": "Reusable RabbitMQ integration using php-amqplib for Laravel apps.",
   "type": "library",
   "license": "MIT",
